@@ -15,6 +15,7 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+<<<<<<< HEAD
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
@@ -31,6 +32,8 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+=======
+>>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
@@ -114,9 +117,16 @@ public class Main implements ActionListener {
 				}
 			};
 			PopupMenu popup=new PopupMenu();
+<<<<<<< HEAD
 			MenuItem defaultItem1=new MenuItem("Exit");
 			defaultItem1.addActionListener(exitListener);
 			MenuItem defaultItem=new MenuItem("Open");
+=======
+			MenuItem defaultItem=new MenuItem("Exit");
+			defaultItem.addActionListener(exitListener);
+			popup.add(defaultItem);
+			defaultItem=new MenuItem("Open");
+>>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 			defaultItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					frame.setVisible(true);
@@ -124,7 +134,10 @@ public class Main implements ActionListener {
 				}
 			});
 			popup.add(defaultItem);
+<<<<<<< HEAD
 			popup.add(defaultItem1);
+=======
+>>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 			trayIcon=new TrayIcon(image, "BioSyncApp", popup);
 			trayIcon.setImageAutoSize(true);
 		}else{
@@ -1351,4 +1364,8 @@ public class Main implements ActionListener {
 
 	}
 
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
