@@ -15,25 +15,6 @@ import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-<<<<<<< HEAD
-
-import java.awt.AWTException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
-import java.awt.SystemTray;
-import java.awt.Toolkit;
-import java.awt.TrayIcon;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-=======
->>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
@@ -52,6 +33,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -88,6 +70,13 @@ import com.biosync.config.Config;
 import com.biosync.model.AttModel;
 import com.biosync.model.RemoteRowModel;
 import java.sql.PreparedStatement;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 /**
  * Main class for BioSync Utility
@@ -96,6 +85,7 @@ import java.sql.PreparedStatement;
  */
 
 public class Main implements ActionListener {
+	private final static String USER_AGENT = "Mozilla/5.0";
 	static TrayIcon trayIcon;
 	static SystemTray tray;
 	public static void createAndShowUi(){
@@ -117,16 +107,9 @@ public class Main implements ActionListener {
 				}
 			};
 			PopupMenu popup=new PopupMenu();
-<<<<<<< HEAD
 			MenuItem defaultItem1=new MenuItem("Exit");
 			defaultItem1.addActionListener(exitListener);
 			MenuItem defaultItem=new MenuItem("Open");
-=======
-			MenuItem defaultItem=new MenuItem("Exit");
-			defaultItem.addActionListener(exitListener);
-			popup.add(defaultItem);
-			defaultItem=new MenuItem("Open");
->>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 			defaultItem.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					frame.setVisible(true);
@@ -134,10 +117,7 @@ public class Main implements ActionListener {
 				}
 			});
 			popup.add(defaultItem);
-<<<<<<< HEAD
 			popup.add(defaultItem1);
-=======
->>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
 			trayIcon=new TrayIcon(image, "BioSyncApp", popup);
 			trayIcon.setImageAutoSize(true);
 		}else{
@@ -274,7 +254,6 @@ public class Main implements ActionListener {
 
 		return "";
 	}
-
 	public static void runAutomatically(){
 		if (isSyncOn == false) {
 			updateConfigData();
@@ -291,6 +270,7 @@ public class Main implements ActionListener {
 				isSyncOn = true;
 				saveConfiguration();
 				scheduler.startScheduler();
+				scheduler.startPulseScheduler();
 				disableAll();
 			} else {
 				JOptionPane.showMessageDialog(frame,"Invalid Config. Please check help for right configuration.");
@@ -597,6 +577,7 @@ public class Main implements ActionListener {
 						isSyncOn = true;
 						saveConfiguration();
 						scheduler.startScheduler();
+						scheduler.startPulseScheduler();
 						disableAll();
 					} else {
 						JOptionPane.showMessageDialog(frame,"Invalid Config. Please check help for right configuration.");
@@ -939,7 +920,13 @@ public class Main implements ActionListener {
 				}
 			}
 		}
-
+		public void startPulseScheduler() {
+			Main.timer[0] = new Timer();
+			int Minutes=10;
+			Main.timer[0].schedule(new pulseSyncTimer(), 0, 1 * 20 * 1000);
+			//Main.timer[0].schedule(new pulseSyncTimer(), 0, Minutes * 60 * 1000);
+		}
+		
 		private long getDelay(Date d) {
 			long time = d.getTime();
 			long currentTime = System.currentTimeMillis();
@@ -985,6 +972,30 @@ public class Main implements ActionListener {
 	 * @author krish
 	 *
 	 */
+	static class pulseSyncTimer extends TimerTask {
+		public void run() {
+			String MachineId=getMachineId();
+			try {
+				sendPost(MachineId);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		public static void sendPost(String MachineId) throws Exception{
+			//String url = "http://192.168.1.36/1.php";
+			String url = "http://192.168.1.31/yii/biosync/index.php/biosync/pulseupdate";
+			HttpClient client = new DefaultHttpClient();
+			HttpPost post = new HttpPost(url);
+			post.setHeader("User-Agent", USER_AGENT);
+
+			List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+			urlParameters.add(new BasicNameValuePair("machine_id", MachineId));
+			post.setEntity(new UrlEncodedFormEntity(urlParameters));
+			HttpResponse response = client.execute(post);
+			Main.log((response.getStatusLine()).toString());
+		}
+	}
 	static class SyncTimer extends TimerTask {
 		public void run() {
 			Main.log("Sync is starting now ");
@@ -1028,7 +1039,7 @@ public class Main implements ActionListener {
 
 			}
 		}
-
+		
 		/**
 		 * Creates settings record on remote server after getting query and
 		 * tenant id input
@@ -1364,8 +1375,4 @@ public class Main implements ActionListener {
 
 	}
 
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 45dbebe93c1f0f9f2c0603433a71c8be42659c02
